@@ -1920,6 +1920,7 @@ static PyObject *netsnmp_get(PyObject *self, PyObject *args)
     PyObject *iid_bytes = NULL;
     int varlist_len = 0;
     int varlist_ind;
+    char out_opt;
 
     /* variables associated for session_ctx (can be condensed into a macro) */
     PyObject *sess_ptr = NULL;
@@ -1963,7 +1964,7 @@ static PyObject *netsnmp_get(PyObject *self, PyObject *args)
         goto done;
     }
 
-    if (!PyArg_ParseTuple(args, "OO", &session, &varlist))
+    if (!PyArg_ParseTuple(args, "OOc", &session, &varlist, &out_opt))
     {
         goto done;
     }
@@ -2115,6 +2116,48 @@ static PyObject *netsnmp_get(PyObject *self, PyObject *args)
         netsnmp_ds_set_int(NETSNMP_DS_LIBRARY_ID,
                            NETSNMP_DS_LIB_OID_OUTPUT_FORMAT,
                            NETSNMP_OID_OUTPUT_NUMERIC);
+    }
+
+    switch(out_opt)
+    {
+        case '0':
+            netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                      NETSNMP_DS_LIB_2DIGIT_HEX_OUTPUT);
+            break;
+        case 'a':
+            netsnmp_ds_set_int(NETSNMP_DS_LIBRARY_ID,
+                               NETSNMP_DS_LIB_STRING_OUTPUT_FORMAT,
+                               NETSNMP_STRING_OUTPUT_ASCII);
+            break;
+        case 'e':
+            netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                      NETSNMP_DS_LIB_PRINT_NUMERIC_ENUM);
+            break;
+        case 'E':
+            netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                      NETSNMP_DS_LIB_ESCAPE_QUOTES);
+            break;
+        case 't':
+            netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                      NETSNMP_DS_LIB_NUMERIC_TIMETICKS);
+            break;
+        case 'T':
+            netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                      NETSNMP_DS_LIB_PRINT_HEX_TEXT);
+            break;
+        case 'U':
+            netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                      NETSNMP_DS_LIB_DONT_PRINT_UNITS);
+            break;
+        case 'x':
+            netsnmp_ds_set_int(NETSNMP_DS_LIBRARY_ID,
+                               NETSNMP_DS_LIB_STRING_OUTPUT_FORMAT,
+                               NETSNMP_STRING_OUTPUT_HEX);
+            break;
+        case 'X':
+            netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                      NETSNMP_DS_LIB_EXTENDED_INDEX);
+            break;
     }
 
     /*
@@ -2277,6 +2320,7 @@ static PyObject *netsnmp_getnext(PyObject *self, PyObject *args)
     PyObject *iid_bytes = NULL;
     unsigned int varlist_len = 0;
     unsigned int varlist_ind;
+    char out_opt;
     struct session_capsule_ctx *session_ctx = NULL;
     netsnmp_session *ss;
     netsnmp_pdu *pdu = NULL;
@@ -2316,7 +2360,7 @@ static PyObject *netsnmp_getnext(PyObject *self, PyObject *args)
 
     if (oid_arr && args)
     {
-        if (!PyArg_ParseTuple(args, "OO", &session, &varlist))
+        if (!PyArg_ParseTuple(args, "OOc", &session, &varlist, &out_opt))
         {
             goto done;
         }
@@ -2475,6 +2519,48 @@ static PyObject *netsnmp_getnext(PyObject *self, PyObject *args)
                                NETSNMP_OID_OUTPUT_NUMERIC);
         }
 
+        switch(out_opt)
+        {
+            case '0':
+                netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                          NETSNMP_DS_LIB_2DIGIT_HEX_OUTPUT);
+                break;
+            case 'a':
+                netsnmp_ds_set_int(NETSNMP_DS_LIBRARY_ID,
+                                   NETSNMP_DS_LIB_STRING_OUTPUT_FORMAT,
+                                   NETSNMP_STRING_OUTPUT_ASCII);
+                break;
+            case 'e':
+                netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                          NETSNMP_DS_LIB_PRINT_NUMERIC_ENUM);
+                break;
+            case 'E':
+                netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                          NETSNMP_DS_LIB_ESCAPE_QUOTES);
+                break;
+            case 't':
+                netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                          NETSNMP_DS_LIB_NUMERIC_TIMETICKS);
+                break;
+            case 'T':
+                netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                          NETSNMP_DS_LIB_PRINT_HEX_TEXT);
+                break;
+            case 'U':
+                netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                          NETSNMP_DS_LIB_DONT_PRINT_UNITS);
+                break;
+            case 'x':
+                netsnmp_ds_set_int(NETSNMP_DS_LIBRARY_ID,
+                                   NETSNMP_DS_LIB_STRING_OUTPUT_FORMAT,
+                                   NETSNMP_STRING_OUTPUT_HEX);
+                break;
+            case 'X':
+                netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                          NETSNMP_DS_LIB_EXTENDED_INDEX);
+                break;
+        }
+
         /*
          * In SNMPv1 we go through the response variables only if we know
          * the varlist_ind is not set in the invalid_oids bit array.
@@ -2629,6 +2715,7 @@ static PyObject *netsnmp_walk(PyObject *self, PyObject *args)
     PyObject *iid_bytes = NULL;
     int varlist_len = 0;
     int varlist_ind;
+    char out_opt;
     struct session_capsule_ctx *session_ctx = NULL;
     netsnmp_session *ss;
     netsnmp_pdu *pdu = NULL;
@@ -2673,7 +2760,7 @@ static PyObject *netsnmp_walk(PyObject *self, PyObject *args)
 
     if (args)
     {
-        if (!PyArg_ParseTuple(args, "OO", &session, &varlist))
+        if (!PyArg_ParseTuple(args, "OOc", &session, &varlist, &out_opt))
         {
             goto done;
         }
@@ -2843,6 +2930,48 @@ static PyObject *netsnmp_walk(PyObject *self, PyObject *args)
             netsnmp_ds_set_int(NETSNMP_DS_LIBRARY_ID,
                                NETSNMP_DS_LIB_OID_OUTPUT_FORMAT,
                                NETSNMP_OID_OUTPUT_NUMERIC);
+        }
+
+        switch(out_opt)
+        {
+            case '0':
+                netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                          NETSNMP_DS_LIB_2DIGIT_HEX_OUTPUT);
+                break;
+            case 'a':
+                netsnmp_ds_set_int(NETSNMP_DS_LIBRARY_ID,
+                                   NETSNMP_DS_LIB_STRING_OUTPUT_FORMAT,
+                                   NETSNMP_STRING_OUTPUT_ASCII);
+                break;
+            case 'e':
+                netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                          NETSNMP_DS_LIB_PRINT_NUMERIC_ENUM);
+                break;
+            case 'E':
+                netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                          NETSNMP_DS_LIB_ESCAPE_QUOTES);
+                break;
+            case 't':
+                netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                          NETSNMP_DS_LIB_NUMERIC_TIMETICKS);
+                break;
+            case 'T':
+                netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                          NETSNMP_DS_LIB_PRINT_HEX_TEXT);
+                break;
+            case 'U':
+                netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                          NETSNMP_DS_LIB_DONT_PRINT_UNITS);
+                break;
+            case 'x':
+                netsnmp_ds_set_int(NETSNMP_DS_LIBRARY_ID,
+                                   NETSNMP_DS_LIB_STRING_OUTPUT_FORMAT,
+                                   NETSNMP_STRING_OUTPUT_HEX);
+                break;
+            case 'X':
+                netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                          NETSNMP_DS_LIB_EXTENDED_INDEX);
+                break;
         }
 
         /* delete the existing varbinds that we'll replace */
@@ -3076,6 +3205,7 @@ static PyObject *netsnmp_getbulk(PyObject *self, PyObject *args)
     PyObject *tag_bytes = NULL;
     PyObject *iid_bytes = NULL;
     int varbind_ind;
+    char out_opt;
     struct session_capsule_ctx *session_ctx = NULL;
     netsnmp_session *ss;
     netsnmp_pdu *pdu = NULL;
@@ -3111,8 +3241,8 @@ static PyObject *netsnmp_getbulk(PyObject *self, PyObject *args)
 
     if (oid_arr && args)
     {
-        if (!PyArg_ParseTuple(args, "OiiO", &session, &nonrepeaters,
-                              &maxrepetitions, &varlist))
+        if (!PyArg_ParseTuple(args, "OiiOc", &session, &nonrepeaters,
+                              &maxrepetitions, &varlist, &out_opt))
         {
             goto done;
         }
@@ -3260,6 +3390,48 @@ static PyObject *netsnmp_getbulk(PyObject *self, PyObject *args)
                                    NETSNMP_OID_OUTPUT_NUMERIC);
             }
 
+            switch(out_opt)
+            {
+                case '0':
+                    netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                              NETSNMP_DS_LIB_2DIGIT_HEX_OUTPUT);
+                    break;
+                case 'a':
+                    netsnmp_ds_set_int(NETSNMP_DS_LIBRARY_ID,
+                                       NETSNMP_DS_LIB_STRING_OUTPUT_FORMAT,
+                                       NETSNMP_STRING_OUTPUT_ASCII);
+                    break;
+                case 'e':
+                    netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                              NETSNMP_DS_LIB_PRINT_NUMERIC_ENUM);
+                    break;
+                case 'E':
+                    netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                              NETSNMP_DS_LIB_ESCAPE_QUOTES);
+                    break;
+                case 't':
+                    netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                              NETSNMP_DS_LIB_NUMERIC_TIMETICKS);
+                    break;
+                case 'T':
+                    netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                              NETSNMP_DS_LIB_PRINT_HEX_TEXT);
+                    break;
+                case 'U':
+                    netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                              NETSNMP_DS_LIB_DONT_PRINT_UNITS);
+                    break;
+                case 'x':
+                    netsnmp_ds_set_int(NETSNMP_DS_LIBRARY_ID,
+                                       NETSNMP_DS_LIB_STRING_OUTPUT_FORMAT,
+                                       NETSNMP_STRING_OUTPUT_HEX);
+                    break;
+                case 'X':
+                    netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                              NETSNMP_DS_LIB_EXTENDED_INDEX);
+                    break;
+            }
+
             if (response && response->variables)
             {
                 /* clear varlist to receive response varbinds*/
@@ -3397,6 +3569,7 @@ static PyObject *netsnmp_bulkwalk(PyObject *self, PyObject *args)
     PyObject *iid_bytes = NULL;
     int varlist_len = 0;
     int varlist_ind;
+    char out_opt;
 
     struct session_capsule_ctx *session_ctx = NULL;
     netsnmp_session *ss = NULL;
@@ -3438,8 +3611,8 @@ static PyObject *netsnmp_bulkwalk(PyObject *self, PyObject *args)
 
     if (args)
     {
-        if (!PyArg_ParseTuple(args, "OiiO", &session, &nonrepeaters,
-                              &maxrepetitions, &varlist))
+        if (!PyArg_ParseTuple(args, "OiiOc", &session, &nonrepeaters,
+                              &maxrepetitions, &varlist, &out_opt))
         {
             goto done;
         }
@@ -3611,6 +3784,48 @@ static PyObject *netsnmp_bulkwalk(PyObject *self, PyObject *args)
             netsnmp_ds_set_int(NETSNMP_DS_LIBRARY_ID,
                                NETSNMP_DS_LIB_OID_OUTPUT_FORMAT,
                                NETSNMP_OID_OUTPUT_NUMERIC);
+        }
+
+        switch(out_opt)
+        {
+            case '0':
+                netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                          NETSNMP_DS_LIB_2DIGIT_HEX_OUTPUT);
+                break;
+            case 'a':
+                netsnmp_ds_set_int(NETSNMP_DS_LIBRARY_ID,
+                                   NETSNMP_DS_LIB_STRING_OUTPUT_FORMAT,
+                                   NETSNMP_STRING_OUTPUT_ASCII);
+                break;
+            case 'e':
+                netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                          NETSNMP_DS_LIB_PRINT_NUMERIC_ENUM);
+                break;
+            case 'E':
+                netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                          NETSNMP_DS_LIB_ESCAPE_QUOTES);
+                break;
+            case 't':
+                netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                          NETSNMP_DS_LIB_NUMERIC_TIMETICKS);
+                break;
+            case 'T':
+                netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                          NETSNMP_DS_LIB_PRINT_HEX_TEXT);
+                break;
+            case 'U':
+                netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                          NETSNMP_DS_LIB_DONT_PRINT_UNITS);
+                break;
+            case 'x':
+                netsnmp_ds_set_int(NETSNMP_DS_LIBRARY_ID,
+                                   NETSNMP_DS_LIB_STRING_OUTPUT_FORMAT,
+                                   NETSNMP_STRING_OUTPUT_HEX);
+                break;
+            case 'X':
+                netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                          NETSNMP_DS_LIB_EXTENDED_INDEX);
+                break;
         }
 
         /* delete the existing varbinds that we'll replace */

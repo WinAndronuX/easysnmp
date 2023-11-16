@@ -3,7 +3,7 @@ from __future__ import unicode_literals, absolute_import
 from .session import Session
 
 
-def snmp_get(oids, **session_kargs):
+def snmp_get(oids, out_opts='', **session_kargs):
     """
     Perform an SNMP GET operation to retrieve a particular piece of
     information.
@@ -13,13 +13,24 @@ def snmp_get(oids, **session_kargs):
                  (e.g. 'sysDescr.0') or may be a tuple containing the
                  name as its first item and index as its second
                  (e.g. ('sysDescr', 0))
+    :param out_opts: you may pass out options like net-snmp package
+                        Toggle various defaults controlling output display:
+                          0:  print leading 0 for single-digit hex characters
+                          a:  print all strings in ascii format
+                          e:  print enums numerically
+                          E:  escape quotes in string indices
+                          t:  print timeticks unparsed as numeric integers
+                          T:  print human-readable text along with hex strings
+                          U:  don't print units
+                          x:  print all strings in hex format
+                          X:  extended index format
     :param session_kargs: keyword arguments which will be sent used when
                           constructing the session for this operation;
                           all parameters in the Session class are supported
     """
 
     session = Session(**session_kargs)
-    return session.get(oids)
+    return session.get(oids, out_opts)
 
 
 def snmp_set(oid, value, type=None, **session_kargs):
@@ -59,7 +70,7 @@ def snmp_set_multiple(oid_values, **session_kargs):
     return session.set_multiple(oid_values)
 
 
-def snmp_get_next(oids, **session_kargs):
+def snmp_get_next(oids, out_opts='', **session_kargs):
     """
     Uses an SNMP GETNEXT operation to retrieve the next variable after
     the chosen item.
@@ -69,16 +80,27 @@ def snmp_get_next(oids, **session_kargs):
                  (e.g. 'sysDescr.0') or may be a tuple containing the
                  name as its first item and index as its second
                  (e.g. ('sysDescr', 0))
+    :param out_opts: you may pass out options like net-snmp package
+                        Toggle various defaults controlling output display:
+                          0:  print leading 0 for single-digit hex characters
+                          a:  print all strings in ascii format
+                          e:  print enums numerically
+                          E:  escape quotes in string indices
+                          t:  print timeticks unparsed as numeric integers
+                          T:  print human-readable text along with hex strings
+                          U:  don't print units
+                          x:  print all strings in hex format
+                          X:  extended index format
     :param session_kargs: keyword arguments which will be sent used when
                           constructing the session for this operation;
                           all parameters in the Session class are supported
     """
 
     session = Session(**session_kargs)
-    return session.get_next(oids)
+    return session.get_next(oids, out_opts)
 
 
-def snmp_get_bulk(oids, non_repeaters=0, max_repetitions=10, **session_kargs):
+def snmp_get_bulk(oids, out_opts='', non_repeaters=0, max_repetitions=10, **session_kargs):
     """
     Performs a bulk SNMP GET operation to retrieve multiple pieces of
     information in a single packet.
@@ -88,6 +110,17 @@ def snmp_get_bulk(oids, non_repeaters=0, max_repetitions=10, **session_kargs):
                  (e.g. 'sysDescr.0') or may be a tuple containing the
                  name as its first item and index as its second
                  (e.g. ('sysDescr', 0))
+    :param out_opts: you may pass out options like net-snmp package
+                        Toggle various defaults controlling output display:
+                          0:  print leading 0 for single-digit hex characters
+                          a:  print all strings in ascii format
+                          e:  print enums numerically
+                          E:  escape quotes in string indices
+                          t:  print timeticks unparsed as numeric integers
+                          T:  print human-readable text along with hex strings
+                          U:  don't print units
+                          x:  print all strings in hex format
+                          X:  extended index format
     :param non_repeaters: the number of objects that are only expected to
                           return a single GETNEXT instance, not multiple
                           instances
@@ -99,10 +132,10 @@ def snmp_get_bulk(oids, non_repeaters=0, max_repetitions=10, **session_kargs):
     """
 
     session = Session(**session_kargs)
-    return session.get_bulk(oids, non_repeaters, max_repetitions)
+    return session.get_bulk(oids, out_opts, non_repeaters, max_repetitions)
 
 
-def snmp_walk(oids=".1.3.6.1.2.1", **session_kargs):
+def snmp_walk(oids=".1.3.6.1.2.1", out_opts='', **session_kargs):
     """
     Uses SNMP GETNEXT operation to automatically retrieve multiple
     pieces of information in an OID for you.
@@ -112,17 +145,28 @@ def snmp_walk(oids=".1.3.6.1.2.1", **session_kargs):
                  entire OID (e.g. 'sysDescr.0') or may be a tuple
                  containing the name as its first item and index as its
                  second (e.g. ('sysDescr', 0))
+    :param out_opts: you may pass out options like net-snmp package
+                        Toggle various defaults controlling output display:
+                          0:  print leading 0 for single-digit hex characters
+                          a:  print all strings in ascii format
+                          e:  print enums numerically
+                          E:  escape quotes in string indices
+                          t:  print timeticks unparsed as numeric integers
+                          T:  print human-readable text along with hex strings
+                          U:  don't print units
+                          x:  print all strings in hex format
+                          X:  extended index format
     :param session_kargs: keyword arguments which will be sent used when
                           constructing the session for this operation;
                           all parameters in the Session class are supported
     """
 
     session = Session(**session_kargs)
-    return session.walk(oids)
+    return session.walk(oids, out_opts)
 
 
 def snmp_bulkwalk(
-    oids=".1.3.6.1.2.1", non_repeaters=0, max_repetitions=10, **session_kargs
+    oids=".1.3.6.1.2.1", out_opts='', non_repeaters=0, max_repetitions=10, **session_kargs
 ):
     """
     Uses SNMP GETBULK operation using the prepared session to
@@ -133,6 +177,17 @@ def snmp_bulkwalk(
                  entire OID (e.g. 'sysDescr.0')
                  * tuple (name, index) (e.g. ('sysDescr', 0))
                  * list of OIDs
+    :param out_opts: you may pass out options like net-snmp package
+                        Toggle various defaults controlling output display:
+                          0:  print leading 0 for single-digit hex characters
+                          a:  print all strings in ascii format
+                          e:  print enums numerically
+                          E:  escape quotes in string indices
+                          t:  print timeticks unparsed as numeric integers
+                          T:  print human-readable text along with hex strings
+                          U:  don't print units
+                          x:  print all strings in hex format
+                          X:  extended index format
     :param non_repeaters: the number of objects that are only expected to
                           return a single GETNEXT instance, not multiple
                           instances
@@ -143,4 +198,4 @@ def snmp_bulkwalk(
     """
 
     session = Session(**session_kargs)
-    return session.bulkwalk(oids, non_repeaters, max_repetitions)
+    return session.bulkwalk(oids, out_opts, non_repeaters, max_repetitions)

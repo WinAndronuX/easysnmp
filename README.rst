@@ -20,6 +20,23 @@ Artwork courtesy of `Open Clip Art
 Library <https://openclipart.org/detail/154453/network>`_
 
 
+This Fork
+---------
+
+This fork adds the "out_opts" argument to the functions get, get_next, get_bulk, walk and bulkwalk. The out_opts argument works similar to the -O (OUTOPTS) argument in the CLI version of net-snmp with some limitations such as that you cannot combine options and only options that affect the value are available.
+
+Toggle various defaults controlling output display:
+
+- 0: print leading 0 for single-digit hex characters
+- a: print all strings in ascii format
+- e: print enums numerically
+- E: escape quotes in string indices
+- t: print timeticks unparsed as numeric integers
+- T: print human-readable text along with hex strings
+- U: don't print units
+- x: print all strings in hex format
+- X: extended index format
+
 Introduction
 ------------
 
@@ -61,6 +78,12 @@ source:
 
     # You may retrieve an individual OID using an SNMP GET
     location = session.get('sysLocation.0')
+
+    # Print uptime in normal format
+    uptime = session.get('1.3.6.1.2.1.1.3.0')
+
+    # Print uptime (timeticks) unparsed as numeric integers
+    uptime = session.get('1.3.6.1.2.1.1.3.0', out_opts='t')
 
     # You may also specify the OID as a tuple (name, index)
     # Note: the index is specified as a string as it can be of other types than

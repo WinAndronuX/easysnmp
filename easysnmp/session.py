@@ -196,7 +196,7 @@ class Session(object):
         trust_cert="",
         use_long_names=False,
         use_numeric=False,
-        use_sprint_value=False,
+        use_sprint_value=True,
         use_enums=False,
         best_guess=0,
         retry_no_such=False,
@@ -276,7 +276,7 @@ class Session(object):
         # Calculate our timeout in microseconds
         return int(self.timeout * 1000000)
 
-    def get(self, oids):
+    def get(self, oids, out_opts=''):
         """
         Perform an SNMP GET operation using the prepared session to
         retrieve a particular piece of information.
@@ -286,6 +286,17 @@ class Session(object):
                      (e.g. 'sysDescr.0') or may be a tuple containing the
                      name as its first item and index as its second
                      (e.g. ('sysDescr', 0))
+        :param out_opts: you may pass out options like net-snmp package
+                        Toggle various defaults controlling output display:
+                          0:  print leading 0 for single-digit hex characters
+                          a:  print all strings in ascii format
+                          e:  print enums numerically
+                          E:  escape quotes in string indices
+                          t:  print timeticks unparsed as numeric integers
+                          T:  print human-readable text along with hex strings
+                          U:  don't print units
+                          x:  print all strings in hex format
+                          X:  extended index format
         :return: an SNMPVariable object containing the value that was
                  retrieved or a list of objects when you send in a list of
                  OIDs
@@ -294,8 +305,10 @@ class Session(object):
         # Build our variable bindings for the C interface
         varlist, is_list = build_varlist(oids)
 
+        out_opts = out_opts.encode('utf-8') if out_opts != '' else b' '
+
         # Perform the SNMP GET operation
-        interface.get(self, varlist)
+        interface.get(self, varlist, out_opts)
 
         # Validate the variable list returned
         if self.abort_on_nonexistent:
@@ -363,7 +376,7 @@ class Session(object):
         success = interface.set(self, varlist)
         return bool(success)
 
-    def get_next(self, oids):
+    def get_next(self, oids, out_opts=''):
         """
         Uses an SNMP GETNEXT operation using the prepared session to
         retrieve the next variable after the chosen item.
@@ -373,6 +386,17 @@ class Session(object):
                      (e.g. 'sysDescr.0') or may be a tuple containing the
                      name as its first item and index as its second
                      (e.g. ('sysDescr', 0))
+        :param out_opts: you may pass out options like net-snmp package
+                        Toggle various defaults controlling output display:
+                          0:  print leading 0 for single-digit hex characters
+                          a:  print all strings in ascii format
+                          e:  print enums numerically
+                          E:  escape quotes in string indices
+                          t:  print timeticks unparsed as numeric integers
+                          T:  print human-readable text along with hex strings
+                          U:  don't print units
+                          x:  print all strings in hex format
+                          X:  extended index format
         :return: an SNMPVariable object containing the value that was
                  retrieved or a list of objects when you send in a list of
                  OIDs
@@ -381,8 +405,10 @@ class Session(object):
         # Build our variable bindings for the C interface
         varlist, is_list = build_varlist(oids)
 
+        out_opts = out_opts.encode('utf-8') if out_opts != '' else b' '
+
         # Perform the SNMP GET operation
-        interface.getnext(self, varlist)
+        interface.getnext(self, varlist, out_opts)
 
         # Validate the variable list returned
         if self.abort_on_nonexistent:
@@ -391,7 +417,7 @@ class Session(object):
         # Return a list or single item depending on what was passed in
         return list(varlist) if is_list else varlist[0]
 
-    def get_bulk(self, oids, non_repeaters=0, max_repetitions=10):
+    def get_bulk(self, oids, out_opts='', non_repeaters=0, max_repetitions=10):
         """
         Performs a bulk SNMP GET operation using the prepared session to
         retrieve multiple pieces of information in a single packet.
@@ -401,6 +427,17 @@ class Session(object):
                      (e.g. 'sysDescr.0') or may be a tuple containing the
                      name as its first item and index as its second
                      (e.g. ('sysDescr', 0))
+        :param out_opts: you may pass out options like net-snmp package
+                        Toggle various defaults controlling output display:
+                          0:  print leading 0 for single-digit hex characters
+                          a:  print all strings in ascii format
+                          e:  print enums numerically
+                          E:  escape quotes in string indices
+                          t:  print timeticks unparsed as numeric integers
+                          T:  print human-readable text along with hex strings
+                          U:  don't print units
+                          x:  print all strings in hex format
+                          X:  extended index format
         :param non_repeaters: the number of objects that are only expected to
                               return a single GETNEXT instance, not multiple
                               instances
@@ -418,7 +455,9 @@ class Session(object):
         # Build our variable bindings for the C interface
         varlist, _ = build_varlist(oids)
 
-        interface.getbulk(self, non_repeaters, max_repetitions, varlist)
+        out_opts = out_opts.encode('utf-8') if out_opts != '' else b' '
+
+        interface.getbulk(self, non_repeaters, max_repetitions, varlist, out_opts)
 
         # Validate the variable list returned
         if self.abort_on_nonexistent:
@@ -427,7 +466,7 @@ class Session(object):
         # Return a list of variables
         return varlist
 
-    def walk(self, oids=".1.3.6.1.2.1"):
+    def walk(self, oids=".1.3.6.1.2.1", out_opts=''):
         """
         Uses SNMP GETNEXT operation using the prepared session to
         automatically retrieve multiple pieces of information in an OID.
@@ -437,6 +476,17 @@ class Session(object):
                      entire OID (e.g. 'sysDescr.0') or may be a tuple
                      containing the name as its first item and index as its
                      second (e.g. ('sysDescr', 0))
+        :param out_opts: you may pass out options like net-snmp package
+                        Toggle various defaults controlling output display:
+                          0:  print leading 0 for single-digit hex characters
+                          a:  print all strings in ascii format
+                          e:  print enums numerically
+                          E:  escape quotes in string indices
+                          t:  print timeticks unparsed as numeric integers
+                          T:  print human-readable text along with hex strings
+                          U:  don't print units
+                          x:  print all strings in hex format
+                          X:  extended index format
         :return: a list of SNMPVariable objects containing the values that
                  were retrieved via SNMP
         """
@@ -444,8 +494,10 @@ class Session(object):
         # Build our variable bindings for the C interface
         varlist, _ = build_varlist(oids)
 
+        out_opts = out_opts.encode('utf-8') if out_opts != '' else b' '
+
         # Perform the SNMP walk using GETNEXT operations
-        interface.walk(self, varlist)
+        interface.walk(self, varlist, out_opts)
 
         # Validate the variable list returned
         if self.abort_on_nonexistent:
@@ -454,7 +506,7 @@ class Session(object):
         # Return a list of variables
         return list(varlist)
 
-    def bulkwalk(self, oids=".1.3.6.1.2.1", non_repeaters=0, max_repetitions=10):
+    def bulkwalk(self, oids=".1.3.6.1.2.1", out_opts='', non_repeaters=0, max_repetitions=10):
         """
         Uses SNMP GETBULK operation using the prepared session to
         automatically retrieve multiple pieces of information in an OID
@@ -464,6 +516,17 @@ class Session(object):
                      entire OID (e.g. 'sysDescr.0') or may be a tuple
                      containing the name as its first item and index as its
                      second (e.g. ('sysDescr', 0))
+        :param out_opts: you may pass out options like net-snmp package
+                        Toggle various defaults controlling output display:
+                          0:  print leading 0 for single-digit hex characters
+                          a:  print all strings in ascii format
+                          e:  print enums numerically
+                          E:  escape quotes in string indices
+                          t:  print timeticks unparsed as numeric integers
+                          T:  print human-readable text along with hex strings
+                          U:  don't print units
+                          x:  print all strings in hex format
+                          X:  extended index format
         :return: a list of SNMPVariable objects containing the values that
                  were retrieved via SNMP
         """
@@ -474,8 +537,10 @@ class Session(object):
         # Build our variable bindings for the C interface
         varlist, _ = build_varlist(oids)
 
+        out_opts = out_opts.encode('utf-8') if out_opts != '' else b' '
+
         # Perform the SNMP walk using GETNEXT operations
-        interface.bulkwalk(self, non_repeaters, max_repetitions, varlist)
+        interface.bulkwalk(self, non_repeaters, max_repetitions, varlist, out_opts)
 
         # Validate the variable list returned
         if self.abort_on_nonexistent:
