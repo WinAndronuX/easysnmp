@@ -305,8 +305,6 @@ class Session(object):
         # Build our variable bindings for the C interface
         varlist, is_list = build_varlist(oids)
 
-        out_opts = out_opts.encode('utf-8') if out_opts != '' else b' '
-
         # Perform the SNMP GET operation
         interface.get(self, varlist, out_opts)
 
@@ -405,8 +403,6 @@ class Session(object):
         # Build our variable bindings for the C interface
         varlist, is_list = build_varlist(oids)
 
-        out_opts = out_opts.encode('utf-8') if out_opts != '' else b' '
-
         # Perform the SNMP GET operation
         interface.getnext(self, varlist, out_opts)
 
@@ -455,8 +451,6 @@ class Session(object):
         # Build our variable bindings for the C interface
         varlist, _ = build_varlist(oids)
 
-        out_opts = out_opts.encode('utf-8') if out_opts != '' else b' '
-
         interface.getbulk(self, non_repeaters, max_repetitions, varlist, out_opts)
 
         # Validate the variable list returned
@@ -493,8 +487,6 @@ class Session(object):
 
         # Build our variable bindings for the C interface
         varlist, _ = build_varlist(oids)
-
-        out_opts = out_opts.encode('utf-8') if out_opts != '' else b' '
 
         # Perform the SNMP walk using GETNEXT operations
         interface.walk(self, varlist, out_opts)
@@ -536,8 +528,6 @@ class Session(object):
 
         # Build our variable bindings for the C interface
         varlist, _ = build_varlist(oids)
-
-        out_opts = out_opts.encode('utf-8') if out_opts != '' else b' '
 
         # Perform the SNMP walk using GETNEXT operations
         interface.bulkwalk(self, non_repeaters, max_repetitions, varlist, out_opts)
