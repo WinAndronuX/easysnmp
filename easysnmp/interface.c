@@ -1921,6 +1921,7 @@ static PyObject *netsnmp_get(PyObject *self, PyObject *args)
     int varlist_len = 0;
     int varlist_ind;
     char *out_opt = NULL;
+    int output_format_old;
 
     /* variables associated for session_ctx (can be condensed into a macro) */
     PyObject *sess_ptr = NULL;
@@ -2118,6 +2119,9 @@ static PyObject *netsnmp_get(PyObject *self, PyObject *args)
                            NETSNMP_OID_OUTPUT_NUMERIC);
     }
 
+    output_format_old = netsnmp_ds_get_int(NETSNMP_DS_LIBRARY_ID,
+                                           NETSNMP_DS_LIB_STRING_OUTPUT_FORMAT);
+
     if (strcmp(out_opt, "0") == 0) {
         netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
                                   NETSNMP_DS_LIB_2DIGIT_HEX_OUTPUT);
@@ -2283,6 +2287,37 @@ static PyObject *netsnmp_get(PyObject *self, PyObject *args)
                        NETSNMP_DS_LIB_OID_OUTPUT_FORMAT,
                        old_format);
 
+    if (strcmp(out_opt, "0") == 0) {
+        netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                  NETSNMP_DS_LIB_2DIGIT_HEX_OUTPUT);
+    } else if (strcmp(out_opt, "a") == 0) {
+        netsnmp_ds_set_int(NETSNMP_DS_LIBRARY_ID,
+                           NETSNMP_DS_LIB_STRING_OUTPUT_FORMAT,
+                           output_format_old);
+    } else if (strcmp(out_opt, "e") == 0) {
+        netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                  NETSNMP_DS_LIB_PRINT_NUMERIC_ENUM);
+    } else if (strcmp(out_opt, "E") == 0) {
+        netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                  NETSNMP_DS_LIB_ESCAPE_QUOTES);
+    } else if (strcmp(out_opt, "t") == 0) {
+        netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                  NETSNMP_DS_LIB_NUMERIC_TIMETICKS);
+    } else if (strcmp(out_opt, "T") == 0) {
+        netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                  NETSNMP_DS_LIB_PRINT_HEX_TEXT);
+    } else if (strcmp(out_opt, "U") == 0) {
+        netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                  NETSNMP_DS_LIB_DONT_PRINT_UNITS);
+    } else if (strcmp(out_opt, "x") == 0) {
+        netsnmp_ds_set_int(NETSNMP_DS_LIBRARY_ID,
+                           NETSNMP_DS_LIB_STRING_OUTPUT_FORMAT,
+                           output_format_old);
+    } else if (strcmp(out_opt, "X") == 0) {
+        netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                  NETSNMP_DS_LIB_EXTENDED_INDEX);
+    }
+
 done:
     Py_XDECREF(sess_ptr);
     Py_XDECREF(err_bytes);
@@ -2311,6 +2346,8 @@ static PyObject *netsnmp_getnext(PyObject *self, PyObject *args)
     unsigned int varlist_len = 0;
     unsigned int varlist_ind;
     char *out_opt = NULL;
+    int output_format_old;
+
     struct session_capsule_ctx *session_ctx = NULL;
     netsnmp_session *ss;
     netsnmp_pdu *pdu = NULL;
@@ -2509,6 +2546,9 @@ static PyObject *netsnmp_getnext(PyObject *self, PyObject *args)
                                NETSNMP_OID_OUTPUT_NUMERIC);
         }
 
+        output_format_old = netsnmp_ds_get_int(NETSNMP_DS_LIBRARY_ID,
+                                               NETSNMP_DS_LIB_STRING_OUTPUT_FORMAT);
+
         if (strcmp(out_opt, "0") == 0) {
             netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
                                       NETSNMP_DS_LIB_2DIGIT_HEX_OUTPUT);
@@ -2658,6 +2698,37 @@ static PyObject *netsnmp_getnext(PyObject *self, PyObject *args)
         netsnmp_ds_set_int(NETSNMP_DS_LIBRARY_ID,
                            NETSNMP_DS_LIB_OID_OUTPUT_FORMAT,
                            old_format);
+
+        if (strcmp(out_opt, "0") == 0) {
+            netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                      NETSNMP_DS_LIB_2DIGIT_HEX_OUTPUT);
+        } else if (strcmp(out_opt, "a") == 0) {
+            netsnmp_ds_set_int(NETSNMP_DS_LIBRARY_ID,
+                               NETSNMP_DS_LIB_STRING_OUTPUT_FORMAT,
+                               output_format_old);
+        } else if (strcmp(out_opt, "e") == 0) {
+            netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                      NETSNMP_DS_LIB_PRINT_NUMERIC_ENUM);
+        } else if (strcmp(out_opt, "E") == 0) {
+            netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                      NETSNMP_DS_LIB_ESCAPE_QUOTES);
+        } else if (strcmp(out_opt, "t") == 0) {
+            netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                      NETSNMP_DS_LIB_NUMERIC_TIMETICKS);
+        } else if (strcmp(out_opt, "T") == 0) {
+            netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                      NETSNMP_DS_LIB_PRINT_HEX_TEXT);
+        } else if (strcmp(out_opt, "U") == 0) {
+            netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                      NETSNMP_DS_LIB_DONT_PRINT_UNITS);
+        } else if (strcmp(out_opt, "x") == 0) {
+            netsnmp_ds_set_int(NETSNMP_DS_LIBRARY_ID,
+                               NETSNMP_DS_LIB_STRING_OUTPUT_FORMAT,
+                               output_format_old);
+        } else if (strcmp(out_opt, "X") == 0) {
+            netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                      NETSNMP_DS_LIB_EXTENDED_INDEX);
+        }
     }
 
 done:
@@ -2696,6 +2767,8 @@ static PyObject *netsnmp_walk(PyObject *self, PyObject *args)
     int varlist_len = 0;
     int varlist_ind;
     char *out_opt = NULL;
+    int output_format_old;
+
     struct session_capsule_ctx *session_ctx = NULL;
     netsnmp_session *ss;
     netsnmp_pdu *pdu = NULL;
@@ -2912,6 +2985,9 @@ static PyObject *netsnmp_walk(PyObject *self, PyObject *args)
                                NETSNMP_OID_OUTPUT_NUMERIC);
         }
 
+        output_format_old = netsnmp_ds_get_int(NETSNMP_DS_LIBRARY_ID,
+                                               NETSNMP_DS_LIB_STRING_OUTPUT_FORMAT);
+
         if (strcmp(out_opt, "0") == 0) {
             netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
                                       NETSNMP_DS_LIB_2DIGIT_HEX_OUTPUT);
@@ -3125,6 +3201,37 @@ static PyObject *netsnmp_walk(PyObject *self, PyObject *args)
                            NETSNMP_DS_LIB_OID_OUTPUT_FORMAT,
                            old_format);
 
+        if (strcmp(out_opt, "0") == 0) {
+            netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                      NETSNMP_DS_LIB_2DIGIT_HEX_OUTPUT);
+        } else if (strcmp(out_opt, "a") == 0) {
+            netsnmp_ds_set_int(NETSNMP_DS_LIBRARY_ID,
+                               NETSNMP_DS_LIB_STRING_OUTPUT_FORMAT,
+                               output_format_old);
+        } else if (strcmp(out_opt, "e") == 0) {
+            netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                      NETSNMP_DS_LIB_PRINT_NUMERIC_ENUM);
+        } else if (strcmp(out_opt, "E") == 0) {
+            netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                      NETSNMP_DS_LIB_ESCAPE_QUOTES);
+        } else if (strcmp(out_opt, "t") == 0) {
+            netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                      NETSNMP_DS_LIB_NUMERIC_TIMETICKS);
+        } else if (strcmp(out_opt, "T") == 0) {
+            netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                      NETSNMP_DS_LIB_PRINT_HEX_TEXT);
+        } else if (strcmp(out_opt, "U") == 0) {
+            netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                      NETSNMP_DS_LIB_DONT_PRINT_UNITS);
+        } else if (strcmp(out_opt, "x") == 0) {
+            netsnmp_ds_set_int(NETSNMP_DS_LIBRARY_ID,
+                               NETSNMP_DS_LIB_STRING_OUTPUT_FORMAT,
+                               output_format_old);
+        } else if (strcmp(out_opt, "X") == 0) {
+            netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                      NETSNMP_DS_LIB_EXTENDED_INDEX);
+        }
+
         if (PyErr_Occurred())
         {
             error = 1;
@@ -3176,6 +3283,8 @@ static PyObject *netsnmp_getbulk(PyObject *self, PyObject *args)
     PyObject *iid_bytes = NULL;
     int varbind_ind;
     char *out_opt = NULL;
+    int output_format_old;
+
     struct session_capsule_ctx *session_ctx = NULL;
     netsnmp_session *ss;
     netsnmp_pdu *pdu = NULL;
@@ -3360,6 +3469,9 @@ static PyObject *netsnmp_getbulk(PyObject *self, PyObject *args)
                                    NETSNMP_OID_OUTPUT_NUMERIC);
             }
 
+            output_format_old = netsnmp_ds_get_int(NETSNMP_DS_LIBRARY_ID,
+                                                   NETSNMP_DS_LIB_STRING_OUTPUT_FORMAT);
+
             if (strcmp(out_opt, "0") == 0) {
                 netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
                                           NETSNMP_DS_LIB_2DIGIT_HEX_OUTPUT);
@@ -3489,6 +3601,37 @@ static PyObject *netsnmp_getbulk(PyObject *self, PyObject *args)
                                NETSNMP_DS_LIB_OID_OUTPUT_FORMAT,
                                old_format);
 
+            if (strcmp(out_opt, "0") == 0) {
+                netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                          NETSNMP_DS_LIB_2DIGIT_HEX_OUTPUT);
+            } else if (strcmp(out_opt, "a") == 0) {
+                netsnmp_ds_set_int(NETSNMP_DS_LIBRARY_ID,
+                                   NETSNMP_DS_LIB_STRING_OUTPUT_FORMAT,
+                                   output_format_old);
+            } else if (strcmp(out_opt, "e") == 0) {
+                netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                          NETSNMP_DS_LIB_PRINT_NUMERIC_ENUM);
+            } else if (strcmp(out_opt, "E") == 0) {
+                netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                          NETSNMP_DS_LIB_ESCAPE_QUOTES);
+            } else if (strcmp(out_opt, "t") == 0) {
+                netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                          NETSNMP_DS_LIB_NUMERIC_TIMETICKS);
+            } else if (strcmp(out_opt, "T") == 0) {
+                netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                          NETSNMP_DS_LIB_PRINT_HEX_TEXT);
+            } else if (strcmp(out_opt, "U") == 0) {
+                netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                          NETSNMP_DS_LIB_DONT_PRINT_UNITS);
+            } else if (strcmp(out_opt, "x") == 0) {
+                netsnmp_ds_set_int(NETSNMP_DS_LIBRARY_ID,
+                                   NETSNMP_DS_LIB_STRING_OUTPUT_FORMAT,
+                                   output_format_old);
+            } else if (strcmp(out_opt, "X") == 0) {
+                netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                          NETSNMP_DS_LIB_EXTENDED_INDEX);
+            }
+
             if (response)
             {
                 snmp_free_pdu(response);
@@ -3530,6 +3673,7 @@ static PyObject *netsnmp_bulkwalk(PyObject *self, PyObject *args)
     int varlist_len = 0;
     int varlist_ind;
     char *out_opt = NULL;
+    int output_format_old;
 
     struct session_capsule_ctx *session_ctx = NULL;
     netsnmp_session *ss = NULL;
@@ -3746,6 +3890,9 @@ static PyObject *netsnmp_bulkwalk(PyObject *self, PyObject *args)
                                NETSNMP_OID_OUTPUT_NUMERIC);
         }
 
+        output_format_old = netsnmp_ds_get_int(NETSNMP_DS_LIBRARY_ID,
+                                                          NETSNMP_DS_LIB_STRING_OUTPUT_FORMAT);
+
         if (strcmp(out_opt, "0") == 0) {
             netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
                                       NETSNMP_DS_LIB_2DIGIT_HEX_OUTPUT);
@@ -3775,8 +3922,6 @@ static PyObject *netsnmp_bulkwalk(PyObject *self, PyObject *args)
         } else if (strcmp(out_opt, "X") == 0) {
             netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
                                       NETSNMP_DS_LIB_EXTENDED_INDEX);
-        } else {
-            // Manejar el caso cuando la opción no coincide con ninguna de las anteriores
         }
         /* delete the existing varbinds that we'll replace */
         PySequence_DelSlice(varbinds, 0, PySequence_Length(varbinds));
@@ -3969,6 +4114,37 @@ static PyObject *netsnmp_bulkwalk(PyObject *self, PyObject *args)
         netsnmp_ds_set_int(NETSNMP_DS_LIBRARY_ID,
                            NETSNMP_DS_LIB_OID_OUTPUT_FORMAT,
                            old_format);
+
+        if (strcmp(out_opt, "0") == 0) {
+            netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                      NETSNMP_DS_LIB_2DIGIT_HEX_OUTPUT);
+        } else if (strcmp(out_opt, "a") == 0) {
+            netsnmp_ds_set_int(NETSNMP_DS_LIBRARY_ID,
+                               NETSNMP_DS_LIB_STRING_OUTPUT_FORMAT,
+                               output_format_old);
+        } else if (strcmp(out_opt, "e") == 0) {
+            netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                      NETSNMP_DS_LIB_PRINT_NUMERIC_ENUM);
+        } else if (strcmp(out_opt, "E") == 0) {
+            netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                      NETSNMP_DS_LIB_ESCAPE_QUOTES);
+        } else if (strcmp(out_opt, "t") == 0) {
+            netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                      NETSNMP_DS_LIB_NUMERIC_TIMETICKS);
+        } else if (strcmp(out_opt, "T") == 0) {
+            netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                      NETSNMP_DS_LIB_PRINT_HEX_TEXT);
+        } else if (strcmp(out_opt, "U") == 0) {
+            netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                      NETSNMP_DS_LIB_DONT_PRINT_UNITS);
+        } else if (strcmp(out_opt, "x") == 0) {
+            netsnmp_ds_set_int(NETSNMP_DS_LIBRARY_ID,
+                               NETSNMP_DS_LIB_STRING_OUTPUT_FORMAT,
+                               output_format_old);
+        } else if (strcmp(out_opt, "X") == 0) {
+            netsnmp_ds_toggle_boolean(NETSNMP_DS_LIBRARY_ID,
+                                      NETSNMP_DS_LIB_EXTENDED_INDEX);
+        }
 
         if (PyErr_Occurred())
         {
